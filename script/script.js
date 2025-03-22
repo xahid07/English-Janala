@@ -9,8 +9,9 @@ function checkLogin() {
         return;
     }
 
-    if (password === "123456") {
-        alert("Login successful!");
+    // if (password === "123456") {
+    if (password !== "123456") {
+        // alert("Login successful!");
         document.getElementById("loginForm").style.display = "none"; 
         document.getElementById("main-content").style.display = "block flex";
         document.getElementById("faq-content").style.display = "block";
@@ -32,35 +33,52 @@ document.getElementById('logOut').addEventListener("click", function(){
 // Learn Section
 
 function loadLearnBtn(){
-    fetch("https://openapi.programming-hero.com/api/levels/all")
-    .then((res) => res.json())
-    .then((category) => displayBtn(category.data));
+     fetch("https://openapi.programming-hero.com/api/levels/all")
+    .then(res => {
+        // console.log('res :>> ', res);
+        return res.json()
+    })
+    .then(category => {
+        // console.log('category :>> ', category);
+        return displayBtn(category.data)
+    });
 }
 
 function displayBtn(data){
     const btnContainer = document.getElementById("button-container");
 
     for (let dat of data){
-
+        // console.log('dat :>> ', dat);
         const btnDiv = document.createElement("div");
         btnDiv.innerHTML = `
-         <button onclick="loadDetails()" class="btn btn-sm px-4 mt-1 border-[#422AD5] border-2 rounded-md text-indigo-800 hover:bg-indigo-800 hover:text-white"><i class="fa-solid fa-book-open"></i>Lesson - ${data.indexOf(dat) +1}</button>
+         <button 
+         onclick="loadDetails(event)" 
+         data-level="${dat.level_no}"
+         class="lesson-button btn btn-sm px-4 mt-1 border-[#422AD5] border-2 rounded-md text-indigo-800 hover:bg-indigo-800 hover:text-white"
+         >
+            <i class="fa-solid fa-book-open"></i>
+            Lesson - ${dat.level_no}
+         </button>
         `;
         btnContainer.append(btnDiv);
-
     }
 
 }
 loadLearnBtn();
-
-function loadDetails(){
-    fetch("https://openapi.programming-hero.com/api/level/5")
+// document.getElementsByClassName('lesson-button').addEventListener('click', loadDetails)
+function loadDetails(event){
+    // console.log('event :>> ', event);
+    const target =  event.target;
+    const parent = target.closest('.lesson-button');
+    const level = parent.dataset.level;
+    fetch("https://openapi.programming-hero.com/api/level/"+level+"")
     .then((response) => response.json())
     .then((details) => displayDetails(details.data));
 }
 function displayDetails(data){
     const detailsContainer = document.getElementById("details-container");
-
+    detailsContainer.innerHTML = '';
+    document.getElementById('default-text')?.remove();
     for (let detail of data) {
         const detailsDiv = document.createElement("div");
         detailsDiv.innerHTML = `
